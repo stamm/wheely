@@ -1,4 +1,4 @@
-package google
+package osm
 
 import (
 	"context"
@@ -28,7 +28,7 @@ func New(token string) Service {
 }
 
 func (svc Service) Name() string {
-	return "Google"
+	return "OSM"
 }
 
 func (svc Service) Calculate(ctx context.Context, start, end types.Point) (types.Result, error) {
@@ -39,34 +39,24 @@ func (svc Service) Calculate(ctx context.Context, start, end types.Point) (types
 	client := &http.Client{
 		Transport: tr,
 	}
-	ret := types.Result{}
-	url := fmt.Sprintf("https://maps.googleapis.com/maps/api/directions/json?origin=%f,%f&destination=%f,%f&key=%s&units=metric", start.Lat, start.Long, end.Lat, end.Long, svc.token)
+	url := fmt.Sprintf("https://api.openrouteservice.org/directions?api_key=%s&coordinates=%f,%f|%f,%f&profile=driving-car&preference=fastest&units=m&language=en&geometry=false", svc.token, start.Long, start.Lat, end.Long, end.Lat)
 	log.Printf("url = %+v\n", url)
-	request, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return ret, err
-	}
-	request = request.WithContext(ctx)
-	resp, err := client.Do(request)
+	resp, err := client.Get(url)
+	ret := types.Result{}
 	if err != nil {
 		return ret, err
 	}
 
 	var result response
-	defer resp.Body.Close()
 	err = json.NewDecoder(resp.Body).Decode(&result)
 	if err != nil {
 		return ret, err
 	}
-
 	if len(result.Routes) == 0 {
 		return ret, errors.New("(routes) == 0")
 	}
-	if len(result.Routes[0].Legs) == 0 {
-		return ret, errors.New("(legs) == 0")
-	}
 	return types.Result{
-		Distance: result.Routes[0].Legs[0].Distance.Meters,
-		Duration: result.Routes[0].Legs[0].Duration.Duration(),
+		Distance: int64(result.Routes[0].Summary.Distance),
+		Duration: time.Duration(result.Routes[0].Summary.Duration) * time.Second,
 	}, nil
 }

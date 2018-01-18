@@ -2,10 +2,11 @@ package services
 
 import (
 	"context"
-	"time"
+
+	"github.com/stamm/wheely/apis/distance/types"
 )
 
 type Service interface {
-	Calculate(ctx context.Context, startLat, startLong, endLat, endLong float64) (int64, time.Duration, error)
-	// Name() String
+	Calculate(ctx context.Context, start, end types.Point) (types.Result, error)
+	Name() string
 }

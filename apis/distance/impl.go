@@ -8,6 +8,8 @@ import (
 
 	"github.com/stamm/wheely/apis/distance/services"
 	"github.com/stamm/wheely/apis/distance/services/google"
+	"github.com/stamm/wheely/apis/distance/services/osm"
+	"github.com/stamm/wheely/apis/distance/types"
 )
 
 type DistanceService struct {
@@ -18,22 +20,29 @@ var (
 	_ IDistanceService = DistanceService{}
 )
 
-func NewService(googleToken string) DistanceService {
+const (
+	timeout = 5 * time.Second
+)
+
+func NewService(googleToken, osmToken string) DistanceService {
 	return DistanceService{
 		services: []services.Service{
 			google.New(googleToken),
+			osm.New(osmToken),
 		},
 	}
 }
 
-func (svc DistanceService) Calculate(ctx context.Context, startLat, startLong, endLat, endLong float64) (int64, time.Duration, error) {
+func (svc DistanceService) Calculate(ctx context.Context, start, end types.Point) (types.Result, error) {
 	for _, externalSvc := range svc.services {
-		distance, duration, err := externalSvc.Calculate(ctx, startLat, startLong, endLat, endLong)
+		reqCtx, cancel := context.WithTimeout(ctx, timeout)
+		result, err := externalSvc.Calculate(reqCtx, start, end)
+		cancel()
 		if err != nil {
 			log.Printf("error from svc: %s", err)
 			continue
 		}
-		return distance, duration, nil
+		return result, nil
 	}
-	return 0, 0, errors.New("Couldn't get result")
+	return types.Result{}, errors.New("Couldn't get result")
 }

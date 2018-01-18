@@ -9,10 +9,14 @@ import (
 
 	httptransport "github.com/go-kit/kit/transport/http"
 	"github.com/stamm/wheely/apis/distance"
+	"github.com/stamm/wheely/apis/distance/types"
 )
 
 func main() {
-	svc := distance.NewService(os.Getenv("GOOGLE_TOKEN"))
+	svc := distance.NewService(
+		os.Getenv("GOOGLE_TOKEN"),
+		os.Getenv("OSM_TOKEN"),
+	)
 
 	calculateHandler := httptransport.NewServer(
 		distance.MakeCalculationEndpoint(svc),
@@ -26,7 +30,7 @@ func main() {
 }
 
 func decodeCalculatorRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	var request distance.CalculateRequest
+	var request types.CalculateRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		return nil, err
 	}
