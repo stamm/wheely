@@ -13,10 +13,12 @@ import (
 )
 
 func main() {
-	svc := distance.NewService(
+	var svc distance.IDistanceService
+	svc = distance.NewService(
 		os.Getenv("GOOGLE_TOKEN"),
 		os.Getenv("OSM_TOKEN"),
 	)
+	svc = distance.NewCacheMiddleware(make(map[types.Travel]types.Result, 1), 0.002, svc)
 
 	calculateHandler := httptransport.NewServer(
 		distance.MakeCalculationEndpoint(svc),

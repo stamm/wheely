@@ -7,7 +7,7 @@ import (
 	"github.com/stamm/wheely/apis/distance/types"
 )
 
-func MakeCalculationEndpoint(svc DistanceService) endpoint.Endpoint {
+func MakeCalculationEndpoint(svc IDistanceService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(types.CalculateRequest)
 		result, err := svc.Calculate(ctx,
