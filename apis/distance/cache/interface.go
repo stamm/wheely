@@ -2,7 +2,8 @@ package cache
 
 import "github.com/stamm/wheely/apis/distance/types"
 
-type Cache interface {
+type ICache interface {
 	Set(types.Travel, types.Result) error
 	Get(types.Travel) (types.Result, error)
+	Find(types.Travel, float64) (types.Result, bool, error)
 }

@@ -21,7 +21,7 @@ var (
 )
 
 const (
-	timeout = 5 * time.Second
+	timeout = 1000 * time.Millisecond
 )
 
 func NewService(googleToken, osmToken string) DistanceService {

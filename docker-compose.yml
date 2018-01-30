@@ -1,0 +1,34 @@
+version: '3'
+services:
+  consul:
+    image: "consul:1.0.3"
+    ports:
+      - "8500:8500"
+    # network_mode: bridge
+    # networks:
+    #   - common
+  distance_api:
+    build:
+      context: .
+      dockerfile: Dockerfile.distance_api
+    env_file: .env
+    ports:
+      - "8090:8080"
+    depends_on:
+      - consul
+  fare_api:
+    build:
+      context: .
+      dockerfile: Dockerfile.fare_api
+    ports:
+      - "8091:8081"
+    depends_on:
+      - consul
+      - distance_api
+    # network_mode: bridge
+    # networks:
+    #   - common
+# networks:
+#   common:
+#     driver: bridge
+

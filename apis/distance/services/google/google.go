@@ -41,7 +41,7 @@ func (svc Service) Calculate(ctx context.Context, start, end types.Point) (types
 	}
 	ret := types.Result{}
 	url := fmt.Sprintf("https://maps.googleapis.com/maps/api/directions/json?origin=%f,%f&destination=%f,%f&key=%s&units=metric", start.Lat, start.Long, end.Lat, end.Long, svc.token)
-	log.Printf("url = %+v\n", url)
+	log.Printf("do query GOOGLE url = %s\n", url)
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return ret, err

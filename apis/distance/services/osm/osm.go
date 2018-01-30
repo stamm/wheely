@@ -40,7 +40,7 @@ func (svc Service) Calculate(ctx context.Context, start, end types.Point) (types
 		Transport: tr,
 	}
 	url := fmt.Sprintf("https://api.openrouteservice.org/directions?api_key=%s&coordinates=%f,%f|%f,%f&profile=driving-car&preference=fastest&units=m&language=en&geometry=false", svc.token, start.Long, start.Lat, end.Long, end.Lat)
-	log.Printf("url = %+v\n", url)
+	log.Printf("do query OSM url = %s\n", url)
 	resp, err := client.Get(url)
 	ret := types.Result{}
 	if err != nil {
