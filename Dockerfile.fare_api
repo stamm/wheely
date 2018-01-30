@@ -16,5 +16,6 @@ MAINTAINER Rustam Zagirov <stammru@gmail.com>
 RUN apk --no-cache add ca-certificates
 COPY --from=builder /fare_api /bin/
 EXPOSE 8081
+VOLUME ["/cfg/"]
 ENTRYPOINT ["/bin/fare_api"]
 

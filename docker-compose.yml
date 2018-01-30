@@ -25,6 +25,8 @@ services:
     depends_on:
       - consul
       - distance_api
+    volumes:
+      - ${PWD}/cfg/:/cfg/
     # network_mode: bridge
     # networks:
     #   - common
